@@ -49,12 +49,17 @@ ros::NodeHandle node;
 ros::Subscriber<std_msgs::Bool> sub_light1("front/light",&onfront);
 ros::Subscriber<std_msgs::Int16> sub_light2("front/light/multi",&onfont_multi);
 ros::Subscriber<geometry_msgs::Twist> sub("/linear/angular", &onTwist);
+std_msgs::Int16 Encoder_right;
+std_msgs::Int16 Encoder_left;
+ros::Publisher right_side("/right/encoder",&Encoder_right);    
+ros::Publisher left_side("/left/encoder",&Encoder_left);
 bool _connected = false;
 uint8_t d_flag=0;
 int i=25,j=25;
 const long pwm_interval=50;
 long break_interval=0;
 long break_fed_interval=0;
+long break_actuate_interval=0;
 unsigned long sig_started=0;
 int limit_sw_State;
 int stflag=0;
@@ -71,6 +76,8 @@ void setup() {
   node.subscribe(sub);
  node.subscribe(sub_light1);
   node.subscribe(sub_light2);
+   node.advertise(right_side);                  //prepare to publish speed in ROS topic
+   node.advertise(left_side);                  //prepare to publish speed in ROS topic
 
 }
 
@@ -131,27 +138,42 @@ void loop() {
     if(1==stflag)
     {
       break_fed_interval++;
-    if(limit_sw_State==HIGH ||break_fed_interval>20000 )
+    if(limit_sw_State==HIGH ||break_fed_interval>30000 )
     {
       break_fed_interval=0;
       stflag=2;
-      digitalWrite(forward_brake, HIGH); //brake stop
-      digitalWrite(reverse_brake, LOW);   //brake reverse
+      digitalWrite(forward_brake, HIGH); //brake hold
+      digitalWrite(reverse_brake, HIGH);   //brake hold
     }
     }
     if(2==stflag)
+    {
+      break_actuate_interval++;
+      if(break_actuate_interval>60000)
+      {
+        break_actuate_interval=0;
+        stflag=3;
+        digitalWrite(forward_brake, HIGH); //brake stop
+        digitalWrite(reverse_brake, LOW);   //brake reverse
+      }
+      node.spinOnce();
+
+    }
+    if(3==stflag)
     {
     
       break_interval++;
       if(break_interval>30000)
       {
       break_interval=0;
-      stflag=3;
-      digitalWrite(forward_brake, HIGH); 
+      stflag=4;
+      digitalWrite(forward_brake, HIGH); //brake stop
       digitalWrite(reverse_brake, HIGH);
       }
       
     }
+    node.spinOnce();
+
 
 }
 void onTwist(const geometry_msgs::Twist &msg)
