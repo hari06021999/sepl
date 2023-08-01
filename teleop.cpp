@@ -65,7 +65,9 @@ class RemoteTeleop {
 
   if(msg.linear.x>0 || msg.linear.x<0)
   {
-     pub.publish(msg);
+     pub.publish(msg);// Publish linear and angular
+
+	  /* Below codes ard debugging purpose */
      l = (msg.linear.x - msg.angular.z) / 2;
          r = (msg.linear.x + msg.angular.z) / 2;
    lPwm = mapPwm(fabs(l), 80,120);
@@ -83,7 +85,7 @@ class RemoteTeleop {
   }
   // Both value comes zero else part will execute and publish zero data to arduino
   else  {
-      pub.publish(msg);
+      pub.publish(msg);// Publish linear and angular as zero
       sleep(0.5);
       pub.publish(msg);
      ROS_INFO("STOP");
@@ -109,7 +111,7 @@ class RemoteTeleop {
      {
       light_1=true;
       value.data=true;
-      pub_light.publish(value);
+      pub_light.publish(value);// Publish light on
       ROS_INFO("Front top Light :%d",light_1);
      }
     /* light variable true at the same time front light flag is two 
@@ -119,7 +121,7 @@ class RemoteTeleop {
        
        light_1=false;
         value.data=false;
-       pub_light.publish(value);
+       pub_light.publish(value);// Publish light off
       ROS_INFO("Front top Light:%d",light_1);
       front_light_flag=0;
      }
@@ -143,7 +145,7 @@ class RemoteTeleop {
      {
       light_2=true;
       value.data=1;
-      pub_multicolor.publish(value);
+      pub_multicolor.publish(value);// Publish white light on
       ROS_INFO("White color :%d",light_2);
      }
     /* fog light variable true at the same time front light flag is one 
@@ -153,7 +155,7 @@ class RemoteTeleop {
        
        light_2=true;
         value.data=2;
-       pub_multicolor.publish(value);
+       pub_multicolor.publish(value);// Publish fog light on
       ROS_INFO("Yellow color :%d",light_2);
      
      }
@@ -164,7 +166,7 @@ class RemoteTeleop {
        
        light_2=false;
         value.data=0;
-       pub_multicolor.publish(value);
+       pub_multicolor.publish(value);// Publish lights off
       ROS_INFO("Lights off:%d",light_2);
       front_fog_light_flag=0;
      }
