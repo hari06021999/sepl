@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*this node subscribes to (joy) topic from the TeleopeTurtle node (one of ROS example packages)          *
+*this node subscribes to (joy) topic from the TeleopeTurtle  node (one of ROS example packages)          *
 *then publish it as the standerd Twist message on topic (/cmd_vel),                                     *                                                 *
 ********************************************************************************************************/
 #include <ros/ros.h>
@@ -45,7 +45,7 @@ class RemoteTeleop {
 	pub_light = nh->advertise<std_msgs::Bool>("front/light",10); // front top light publish topic 
         pub_multicolor = nh->advertise<std_msgs::Int16>("front/light/multi",10);//front multiclor light publish topic
         pub = nh->advertise<geometry_msgs::Twist>("/linear/angular", 100); // linear and angular value publish topic
-	/* Subscriber topics subscribing the data from ROS Mobile App      
+	/* Subscriber topics subscribing the data from ROS Mobile App  */    
         joystick_subscriber = nh->subscribe("/cmd_vel", 2, &RemoteTeleop::callback_joy, this); // Linear and angular value subscribing
         button1_subscriber = nh->subscribe("btn1topic", 2, &RemoteTeleop::callback_button1, this);// front top light data subscribing
 	button2_subscriber = nh->subscribe("btn2topic", 2, &RemoteTeleop::callback_button2, this);// front fog light data subscribing
